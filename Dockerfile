@@ -1,8 +1,8 @@
 FROM node:17-alpine3.12
 
-RUN ls
+WORKDIR /app
 
-COPY package.json packge-lock.json ./
+COPY package.json package-lock.json ./
 
 RUN npm install --frozen-lockfile --no-dev
 
