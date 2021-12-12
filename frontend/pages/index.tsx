@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { useState } from 'react';
 import ky from 'ky-universal';
 
