@@ -1,7 +1,6 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react';
-import ky from 'ky-universal';
 
 const Home: NextPage = () => {
   const [room, setRoom] = useState<string>("");
