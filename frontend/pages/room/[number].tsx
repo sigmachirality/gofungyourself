@@ -45,7 +45,7 @@ const Room: NextPage = () => {
     useEffect(
         () => {
             if (typeof number === 'undefined' || username.length <= 0) return
-            const socket = new WebSocket(`ws://127.0.0.1:8000/ws/room/${number}/${username}`)
+            const socket = new WebSocket(`ws://${process.env.BACKEND_URL ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
             setSocket(socket)
         }
         , [number, username]
@@ -58,7 +58,7 @@ const Room: NextPage = () => {
             if (data.type === 'state') {
                 // TODO: set the game state
             } else if (data.type === 'message') {
-                number !== 'undefined' && setMessages([...messages, JSON.parse(e.data)])
+                number !== 'undefined' && setMessages([...messages, data])
             }
         })
     }, [socket, messages])
@@ -68,26 +68,30 @@ const Room: NextPage = () => {
     }
 
     function handleSend() {
-        console.log(message)
-        socket && socket.send(JSON.stringify({
-            message
-        }))
-        console.log("sent")
+        socket && socket.send(JSON.stringify({ message }))
     }
+
+    const chat = messages.map(({ message, sender }, i) => <li key={`${message}-${i}`}>{sender}: {message}</li>)
 
     return username
         ? (
             <>
-                <h1>
-                    Code: {number}
-                    <br />
-                    Player: {username}
-                </h1>
+                <nav className="max-width is-flex">
+                    <div className="mr-auto is-inline">
+                        Code: {number}
+                    </div>
+                    <div className="is-inline">
+                        Player: {username}
+                    </div>
+                </nav>
                 <div className="columns is-align-content-stretch">
                     <div className="column">
                         GAME HERE
                     </div>
-                    <div className="column">
+                    <div className="column is-one-quarter is-align-content-stretch">
+                        <ul className="is-clipped is-align-content-stretch">
+                            {chat}
+                        </ul>
                         <input
                             type="text"
                             onChange={handleChange}
@@ -96,12 +100,6 @@ const Room: NextPage = () => {
                         <button onClick={handleSend}>
                             Send
                         </button>
-                        <br />
-                        <ul>
-                            {
-                                messages.map(({ message, sender }, i) => <li key={`${message}-${i}`}>{sender}: {message}</li>)
-                            }
-                        </ul>
                     </div>
                 </div>
             </>
