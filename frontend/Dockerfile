@@ -9,4 +9,4 @@ RUN npm install --frozen-lockfile --no-dev
 COPY . .
 
 # RUN npm run build
-CMD ["npm", "run", "build", "&&", "npm", "start"]
+CMD npm rum build && npm start
