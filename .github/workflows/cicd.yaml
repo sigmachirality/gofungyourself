@@ -10,12 +10,12 @@ jobs:
 
           - name: Setup Node.js
             uses: actions/setup-node@v2
+            
+          - name: lint
             run: |
               npm ci
               npm run export
-          
-          - name: lint
-            run: npm run lint
+              npm run lint
 
   frontend-build:
       name: Build and publish frontend
