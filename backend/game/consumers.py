@@ -1,12 +1,20 @@
 import json, random
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from .models import Game
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.player = self.scope['url_route']['kwargs']['player']
         self.room_group_name = 'game_%s' % self.room_name
+
+        try:
+            if not Game.objects.filter(pk=int(self.room_name)).exists():
+                self.close()
+            self.game = Game.objects.filter(pk=int(self.room_name)).first()
+        except ValueError:
+            self.close()
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
