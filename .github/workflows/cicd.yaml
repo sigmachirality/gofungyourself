@@ -15,7 +15,6 @@ jobs:
             run: |
               cd frontend
               npm ci
-              npm run export
               npm run lint
 
   frontend-build:
