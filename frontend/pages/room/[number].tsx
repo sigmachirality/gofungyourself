@@ -91,7 +91,7 @@ const Room: NextPage = () => {
     useEffect(
         () => {
             if (typeof number === 'undefined' || username.length <= 0) return
-            const socket = new WebSocket(`ws://${process.env.NEXT_PUBLIC_HOST ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
+            const socket = new WebSocket(`${process.env.NEXT_PUBLIC_HOST ? "wss" : "ws"}://${process.env.NEXT_PUBLIC_HOST ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
             socket.onclose = e => {
                 alert("Game doesn't exist!")
                 router.push('/')
