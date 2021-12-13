@@ -33,7 +33,7 @@ metadata:
 spec:
   selector:
     app: fung-{{ .Release.Name }}
-    tier: backend
+    # tier: backend
   ports:
     - port: {{ .Values.backend.port }}
       targetPort: 8000
