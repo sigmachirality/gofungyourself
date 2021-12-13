@@ -26,7 +26,8 @@ const CreateGame : FunctionComponent = () => {
     e.preventDefault()
     const data : GameData = await ky.post(`/api/game/create_game/`, {
       json: {
-        mode: gameMode
+        mode: gameMode,
+        entries: numEntries
       }
     }).json()
     router.push(`/room/${data.code}`)

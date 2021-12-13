@@ -85,7 +85,9 @@ const Room: NextPage = () => {
     const [messages, setMessages] = useState<Array<IChatMessage>>([]);
     const [started, setStarted] = useState<boolean>(false)
     const [question, setQuestion] = useState<IQuestion>()
+    const [questionNumber, setQuestionNumber] = useState<number>(0)
     const [guess, setGuess] = useState<number>(0)
+    const [submitted, setSubmitted] = useState<boolean>(false)
 
 
     useEffect(
@@ -93,7 +95,6 @@ const Room: NextPage = () => {
             if (typeof number === 'undefined' || username.length <= 0) return
             const socket = new WebSocket(`ws://${process.env.NEXT_PUBLIC_HOST ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
             socket.onclose = e => {
-                alert("Game doesn't exist!")
                 router.push('/')
             }
             setSocket(socket)
@@ -102,7 +103,7 @@ const Room: NextPage = () => {
     )
 
     function onExpire() {
-        
+        handleSubmit();
     }
 
     const { seconds, restart } = useTimer({ 
@@ -127,10 +128,30 @@ const Room: NextPage = () => {
                 deadline.setSeconds(deadline.getSeconds() + 15)
                 restart(deadline)
                 setStarted(true)
+                setSubmitted(false)
+                setGuess(0)
                 setQuestion(data.question)
+                setQuestionNumber(questionNumber + 1)
+            } else if (data.type === 'confirm') {
+                setSubmitted(true)
+            } else if (data.type === 'result') {
+                const deadline = new Date()
+                deadline.setSeconds(deadline.getSeconds() + 5)
+                restart(deadline)
+            } else if (data.type === 'end') {
+                alert("thanks for playing!")
+                router.push('/')
             }
         })
     }, [socket, messages, restart])
+
+    useEffect(() => {
+        if (!submitted || seconds) return
+        socket && socket.send(JSON.stringify({
+            type: 'result',
+            question: questionNumber
+        }))
+    }, [submitted, seconds])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setMessage(e.target.value);
@@ -138,6 +159,11 @@ const Room: NextPage = () => {
 
     function handleGuess(e: React.ChangeEvent<HTMLInputElement>) {
         setGuess(Number(e.target.value));
+    }
+
+    function handleSubmit(e?: React.SyntheticEvent) {
+        e && e.preventDefault();
+        socket && socket.send(JSON.stringify( { type: 'guess', guess }))
     }
 
     function handleSend() {
@@ -173,14 +199,17 @@ const Room: NextPage = () => {
                                     <ScoreBoard 
                                         users={users}
                                     />
-                                    {question && seconds && <>
+                                    {question && <>
                                         <img src={question?.image_url} />
                                         <h1>Price: </h1>
-                                        <form>
+                                        <form
+                                            onSubmit={handleSubmit}
+                                        >
                                             <input
                                                 onChange={handleGuess}
                                                 type="number" 
                                                 value={guess}
+                                                disabled={submitted || !seconds}
                                             />
                                         </form>
                                     </>}

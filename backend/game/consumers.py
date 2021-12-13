@@ -1,4 +1,4 @@
-import json, random
+import json, random, math
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.forms.models import model_to_dict
@@ -76,7 +76,7 @@ class GameConsumer(WebsocketConsumer):
         message_type = text_data_json['type']
 
         if message_type == 'message':
-            message_type = text_data_json['type']
+            message = text_data_json['message']
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -92,8 +92,64 @@ class GameConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'get_question',
+                    'question': 0
                 }
             )
+        elif message_type == 'guess':
+            guess = text_data_json['guess']
+            self.player.guess = guess
+            self.player.save()
+            self.send(text_data=json.dumps({
+                'type': 'confirm'
+            }))
+        elif message_type == 'result':
+            question_num = text_data_json['question']
+            for i, q in enumerate(self.game.entry_set.all()):
+                if i == (question_num - 1):
+                    question = q
+                    break
+            if not question.graded:
+                print("grading", question_num)
+                if self.game.mode == 'closest':
+                    delta = abs(self.player.guess - round(float(question.price)))
+                    current_min = self.player
+                    for player in list(self.game.player_set.all()):
+                        print(question_num, player.name, player.guess, player.score)
+                        current_delta = abs(player.guess - round(float(question.price)))
+                        if current_delta < delta:
+                            delta = current_delta
+                            current_min = player
+                    current_min.score = current_min.score + 1
+                    current_min.save()
+                elif self.game.mode == 'bubble':
+                    delta = round(float(question.price)) - self.player.guess
+                    current_min = self.player
+                    for player in list(self.game.player_set.all()):
+                        current_delta = round(float(question.price)) - player.guess
+                        if (current_delta < delta and current_delta > 0) or delta < 0:
+                            delta = current_delta
+                            current_min = player
+                    if delta > 0:
+                        current_min.score = current_min.score + 1
+                        current_min.save()
+                elif self.game.mode == 'exact':
+                    if round(self.player.guess, 2) == round(float(question.price), 2):
+                        self.player.score = self.player.score + 1
+                        self.player.save()
+                
+                question.graded = True
+                question.save()
+                async_to_sync(self.channel_layer.group_send)(
+                    self.room_group_name,
+                    {
+                        'type': 'get_question',
+                        'question': question_num
+                    }
+                )
+
+            self.users_update("")
+
+
 
 
     def chat_message(self, event):
@@ -113,8 +169,15 @@ class GameConsumer(WebsocketConsumer):
         }))
 
 
-    def get_question(self, _):
+    def get_question(self, event):
+        self.player.guess = 0
+        self.player.save()
+        question = int(event['question'])
+        if question >= self.game.rounds:
+            self.send(text_data=json.dumps({
+                'type': 'end',
+            }))
         self.send(text_data=json.dumps({
             'type': 'question',
-            'question': model_to_dict(self.game.entry_set.first())
+            'question': model_to_dict(list(self.game.entry_set.all())[question])
         }))

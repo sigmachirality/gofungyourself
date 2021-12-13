@@ -11,15 +11,16 @@ def create_game(request):
         return HttpResponseNotFound("GET called on POST route")
     content = json.loads(request.body)
     game_mode = content['mode']
+    game_entries = content['entries']
     game_code = random.randint(10000, 100000)
     while Game.objects.filter(pk=game_code).exists():
        game_code = random.randint(10000, 100000)
 
-    game = Game.objects.create(code=game_code, mode=game_mode)
+    game = Game.objects.create(code=game_code, mode=game_mode, rounds=game_entries)
     game.save()
 
     offset = random.randint(100, 10000)
-    data = requests.get(f"https://rinkeby-api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit=20").json()['assets']
+    data = requests.get(f"https://rinkeby-api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit={ game_entries }").json()['assets']
     for nft in data:
         if ('last_sale' in nft):
             entry = Entry.objects.create(
