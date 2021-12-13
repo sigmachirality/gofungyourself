@@ -70,6 +70,11 @@ interface IChatMessage {
     sender: string
 }
 
+interface IQuestion {
+    price: number
+    image_url: string
+}
+
 const Room: NextPage = () => {
     const router = useRouter();
     const { number } = router.query;
@@ -79,6 +84,8 @@ const Room: NextPage = () => {
     const [message, setMessage] = useState<string>("");
     const [messages, setMessages] = useState<Array<IChatMessage>>([]);
     const [started, setStarted] = useState<boolean>(false)
+    const [question, setQuestion] = useState<IQuestion>()
+    const [guess, setGuess] = useState<number>(0)
 
 
     useEffect(
@@ -107,25 +114,20 @@ const Room: NextPage = () => {
     useEffect(() => {
         socket && (socket.onmessage = e => {
             const data = JSON.parse(e.data)
-            console.log(data)
             if (data.type === 'state') {
-                setUsers(data.users)
                 setStarted(data.started)
+                setUsers(data.users)
             } else if (data.type === 'user') {
                 started && users.sort((a: IUser, b: IUser) => b.score - a.score)
                 setUsers(data.users)
             } else if (data.type === 'message') {
                 setMessages([...messages, data])
-            } else if (data.type === 'start') {
-                const deadline = new Date()
-                deadline.setSeconds(deadline.getSeconds() + 15)
-                restart(deadline)
-                setStarted(true)
             } else if (data.type === 'question') {
                 const deadline = new Date()
                 deadline.setSeconds(deadline.getSeconds() + 15)
                 restart(deadline)
                 setStarted(true)
+                setQuestion(data.question)
             }
         })
     }, [socket, messages, restart])
@@ -134,12 +136,16 @@ const Room: NextPage = () => {
         setMessage(e.target.value);
     }
 
+    function handleGuess(e: React.ChangeEvent<HTMLInputElement>) {
+        setGuess(Number(e.target.value));
+    }
+
     function handleSend() {
         socket && socket.send(JSON.stringify({ type: 'message', message }))
     }
 
     function startGame() {
-        socket && socket.send(JSON.stringify({ type: 'start'}))
+        socket && socket.send(JSON.stringify({ type: 'start' }))
     }
 
     const chat = messages.map(({ message, sender }, i) => <li key={`${message}-${i}`}>{sender}: {message}</li>)
@@ -167,6 +173,17 @@ const Room: NextPage = () => {
                                     <ScoreBoard 
                                         users={users}
                                     />
+                                    {question && seconds && <>
+                                        <img src={question?.image_url} />
+                                        <h1>Price: </h1>
+                                        <form>
+                                            <input
+                                                onChange={handleGuess}
+                                                type="number" 
+                                                value={guess}
+                                            />
+                                        </form>
+                                    </>}
                                 </>
                                 : <WaitingRoom
                                     startGame={startGame}

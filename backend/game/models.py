@@ -19,14 +19,16 @@ class Game(models.Model):
 
     started = models.BooleanField(default=False)
 
+
 class Player(models.Model):
     name = models.CharField(max_length=32)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
+
 
 class Entry(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     id = models.CharField(max_length=128, primary_key=True)
     name = models.CharField(max_length=128) 
     image_url = models.CharField(max_length=256)
-    price = models.CharField(max_length=128)
+    price = models.CharField(max_length=128, default=0)

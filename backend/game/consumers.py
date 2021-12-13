@@ -1,6 +1,7 @@
 import json, random
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.forms.models import model_to_dict
 from .models import Game, Player
 
 class GameConsumer(WebsocketConsumer):
@@ -90,7 +91,7 @@ class GameConsumer(WebsocketConsumer):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
-                    'type': 'start_game',
+                    'type': 'get_question',
                 }
             )
 
@@ -112,7 +113,8 @@ class GameConsumer(WebsocketConsumer):
         }))
 
 
-    def start_game(self, _):
+    def get_question(self, _):
         self.send(text_data=json.dumps({
-            'type': 'start'
+            'type': 'question',
+            'question': model_to_dict(self.game.entry_set.first())
         }))
