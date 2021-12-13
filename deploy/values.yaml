@@ -1,0 +1,22 @@
+application:
+  ingress:
+    host: simono.cis188.org
+    path: "/"
+    secretName: "simono-cis188-org-tls"
+
+redis:
+  image: redis
+  tag: "5.0"
+  port: 6379
+
+frontend:
+  image: ghcr.io/sigmachirality/gofungyourself-frontend
+  tag: latest
+  port: 3000
+  replicas: 1
+
+backend:
+  image: ghcr.io/sigmachirality/gofungyourself-backend
+  tag: latest
+  port: 8000
+  replicas: 1

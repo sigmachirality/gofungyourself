@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: api-ingress-{{ .Release.Name }}
+#   annotations:
+#     nginx.org/rewrites: "serviceName=frontend-{{ .Release.Name }} rewrite=/"
+#   annotations: 
+#       traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
+
+spec:
+  rules:
+    - host: "{{ .Values.application.ingress.host }}"
+      http:
+        paths:
+          - path: "{{ .Values.application.ingress.path }}"
+            backend:
+              serviceName: frontend-{{ .Release.Name }}
+              servicePort: {{ .Values.frontend.port }}
+  tls:
+    - hosts:
+        - "{{ .Values.application.ingress.host }}"
+      secretName: "{{ .Values.application.ingress.secretName }}"
