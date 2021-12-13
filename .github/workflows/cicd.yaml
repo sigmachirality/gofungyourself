@@ -1,45 +1,45 @@
 name: CI / CD
 on: push
 jobs:
-    frontend-build:
-        name: Build and publish frontend
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
+  frontend-build:
+      name: Build and publish frontend
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v2
 
-            - name: Login to GHCR
-              uses: docker/login-action@v1
-              with:
-                registry: ghcr.io
-                username: $GITHUB_ACTOR
-                password: ${{ secrets.GITHUB_TOKEN }}
+          - name: Login to GHCR
+            uses: docker/login-action@v1
+            with:
+              registry: ghcr.io
+              username: $GITHUB_ACTOR
+              password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Build and push image
-              uses: docker/build-push-action@v2
-              with:
-                context: frontend
-                push: ${{ github.ref == 'refs/heads/main' }}
-                tags: "ghcr.io/sigmachirality/gofungyourself-frontend:${{ github.sha }},ghcr.io/sigmachirality/gofungyourself-frontend:latest"
-    backend-build:
-        name: Build and publish backend
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
+          - name: Build and push image
+            uses: docker/build-push-action@v2
+            with:
+              context: frontend
+              push: ${{ github.ref == 'refs/heads/main' }}
+              tags: "ghcr.io/sigmachirality/gofungyourself-frontend:${{ github.sha }},ghcr.io/sigmachirality/gofungyourself-frontend:latest"
+  backend-build:
+      name: Build and publish backend
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v2
 
-            - name: Login to GHCR
-              uses: docker/login-action@v1
-              with:
-                registry: ghcr.io
-                username: $GITHUB_ACTOR
-                password: ${{ secrets.GITHUB_TOKEN }}
+          - name: Login to GHCR
+            uses: docker/login-action@v1
+            with:
+              registry: ghcr.io
+              username: $GITHUB_ACTOR
+              password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Build and push image
-              uses: docker/build-push-action@v2
-              with:
-                context: backend
-                push: ${{ github.ref == 'refs/heads/main' }}
-                tags: "ghcr.io/sigmachirality/gofungyourself-backend:${{ github.sha }},ghcr.io/sigmachirality/gofungyourself-backend:latest"
+          - name: Build and push image
+            uses: docker/build-push-action@v2
+            with:
+              context: backend
+              push: ${{ github.ref == 'refs/heads/main' }}
+              tags: "ghcr.io/sigmachirality/gofungyourself-backend:${{ github.sha }},ghcr.io/sigmachirality/gofungyourself-backend:latest"
       
                 

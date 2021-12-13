@@ -29,6 +29,6 @@ USER appuser
 COPY . .
 
 # Run the application
-RUN "pipenv shell"
-RUN "python manage.py migrate"
-CMD "python manage.py runserver"
+# RUN "pipenv shell"
+RUN python manage.py migrate
+CMD ["python", "manage.py", "runserver"]
