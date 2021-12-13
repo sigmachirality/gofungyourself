@@ -14,10 +14,10 @@ frontend:
   image: ghcr.io/sigmachirality/gofungyourself-frontend
   tag: latest
   port: 3000
-  replicas: 5
+  replicas: 2
 
 backend:
   image: ghcr.io/sigmachirality/gofungyourself-backend
   tag: latest
   port: 4000
-  replicas: 5
+  replicas: 2
