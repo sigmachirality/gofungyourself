@@ -14,9 +14,11 @@ RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --deploy --ignore-pipfile
+RUN pipenv install 
 
-FROM base AS runtime
+# --deploy --ignore-pipfile
+
+# FROM base AS runtime
 
 # COPY --from=python-deps /.venv /.venv
 # ENV PATH="/.venv/bin:$PATH"
