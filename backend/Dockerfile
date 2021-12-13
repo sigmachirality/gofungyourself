@@ -18,13 +18,13 @@ RUN pipenv install --deploy --ignore-pipfile
 
 FROM base AS runtime
 
-COPY --from=python-deps /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
+# COPY --from=python-deps /.venv /.venv
+# ENV PATH="/.venv/bin:$PATH"
 
-# Create and switch to a new user
-RUN useradd --create-home appuser
-WORKDIR /home/appuser
-USER appuser
+# # Create and switch to a new user
+# RUN useradd --create-home appuser
+# WORKDIR /home/appuser
+# USER appuser
 
 # Install application into container
 COPY . .
@@ -32,4 +32,4 @@ COPY . .
 # Run the application
 # RUN "pipenv shell"
 # RUN python manage.py migrate
-CMD python manage.py migrate && python manage.py runserver
+CMD pipenv run python manage.py migrate && pipenv run python manage.py runserver 8000
