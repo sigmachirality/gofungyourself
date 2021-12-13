@@ -47,11 +47,12 @@ class GameConsumer(WebsocketConsumer):
         )
 
         self.accept()
-        self.send(text_data=json.dumps({
-            'type': 'state',
-            'users': list(self.game.player_set.values("name", "score")),
-            'started': bool(self.game.started)
-        }))
+        if hasattr(self, 'game'):
+            self.send(text_data=json.dumps({
+                'type': 'state',
+                'users': list(self.game.player_set.values("name", "score")),
+                'started': bool(self.game.started)
+            }))
 
 
     def disconnect(self, close_code):
@@ -59,7 +60,7 @@ class GameConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        if not self.game.started:
+        if hasattr(self, 'game') and not self.game.started:
             self.player.delete()
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -67,7 +68,7 @@ class GameConsumer(WebsocketConsumer):
                     'type': 'users_update'
                 }
             )
-            if not Player.objects.filter(game=self.game).exists():
+            if not Player.objects.filter(game=self.game).exists() and self.game:
                 self.game.delete()
 
 

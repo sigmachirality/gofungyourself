@@ -8,6 +8,8 @@ django = "*"
 channels = "*"
 channels-redis = "*"
 requests = "*"
+pytest-django = "*"
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.8.10"
