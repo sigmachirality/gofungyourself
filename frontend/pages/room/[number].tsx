@@ -20,7 +20,7 @@ const UsernameForm: FunctionComponent<IUsernameForm> = ({ setUsername }) => {
     }
 
     return <form onSubmit={handleSubmit}>
-        <h1>What's your name?</h1>
+        <h1>{"What's your name?"}</h1>
         <input
             type="text"
             value={value}
@@ -61,7 +61,7 @@ const Room: NextPage = () => {
                 number !== 'undefined' && setMessages([...messages, data])
             }
         })
-    }, [socket, messages])
+    }, [socket, messages, number])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setMessage(e.target.value);

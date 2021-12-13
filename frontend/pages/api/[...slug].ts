@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import httpProxyMiddleware from 'next-http-proxy-middleware'
 
-export default (req: NextApiRequest, res: NextApiResponse) => (
+const middleware = (req: NextApiRequest, res: NextApiResponse) => (
     httpProxyMiddleware(req, res, {
         target: process.env.BACKEND_URL 
             ? "https://" + process.env.BACKEND_URL 
@@ -11,5 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => (
           replaceStr: '/'
         }],
       })
-  );
+);
+
+export default middleware;
   
