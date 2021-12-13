@@ -3,6 +3,7 @@ application:
     host: simono.cis188.org
     path: "/"
     secretName: "simono-cis188-org-tls"
+    socket_path: "/ws"
 
 redis:
   image: redis

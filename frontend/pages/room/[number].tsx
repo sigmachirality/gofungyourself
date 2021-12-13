@@ -21,7 +21,7 @@ const UsernameForm: FunctionComponent<IUsernameForm> = ({ setUsername }) => {
     }
 
     return <form onSubmit={handleSubmit}>
-        <h1>What's your name?</h1>
+        <h1>{"What's your name?"}</h1>
         <input
             type="text"
             value={value}
@@ -43,8 +43,8 @@ interface IRoom {
 const WaitingRoom : FunctionComponent<IRoom> = ({ users, startGame }) => {
     return <>
         <ul>
-            {users.map(user =>
-                <li>
+            {users.map((user, i) =>
+                <li key={i}>
                     {user.name}
                 </li>
             )}
@@ -56,8 +56,8 @@ const WaitingRoom : FunctionComponent<IRoom> = ({ users, startGame }) => {
 const ScoreBoard : FunctionComponent<IRoom> = ({ users }) => {
     return <>
         <ul>
-            {users.map(user =>
-                <li>
+            {users.map((user, i) =>
+                <li key={i}>
                     {user.name}: {user.score}
                 </li>
             )}
@@ -91,14 +91,14 @@ const Room: NextPage = () => {
     useEffect(
         () => {
             if (typeof number === 'undefined' || username.length <= 0) return
-            const socket = new WebSocket(`ws://${process.env.BACKEND_URL ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
+            const socket = new WebSocket(`ws://${process.env.NEXT_PUBLIC_HOST ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
             socket.onclose = e => {
                 alert("Game doesn't exist!")
                 router.push('/')
             }
             setSocket(socket)
         }
-        , [number, username]
+        , [number, username], 
     )
 
     function onExpire() {
