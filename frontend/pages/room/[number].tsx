@@ -10,7 +10,7 @@ const Room: NextPage = () => {
 
     useEffect(
         () => {
-            const socket = new WebSocket(`ws://127.0.0.1:8000/ws/room/${number}`)
+            const socket = new WebSocket(`ws://${process.env.BACKEND_URL ?? "127.0.0.1:8000" }/ws/room/${number}`)
             socket.onmessage = e => alert(e.data)
             socket.onopen = () => socket.send(JSON.stringify({
                 message: "test"

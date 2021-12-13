@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-{{ .Release.Name }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: fung-{{ .Release.Name }}
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: fung-{{ .Release.Name }}
+        tier: frontend
+    spec:
+      containers:
+        - name: frontend-{{ .Release.Name }}
+          image: "{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: BACKEND_URL
+              value: "backend-{{ .Release.Name }}:{{ .Values.backend.port }}"
+      imagePullSecrets:
+        - name: docker-registry-registrycreds
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-{{ .Release.Name }}
+spec:
+  selector:
+    app: fung-{{ .Release.Name }}
+    tier: frontend
+  ports:
+    - port: {{ .Values.frontend.port }}
+      targetPort: 3000

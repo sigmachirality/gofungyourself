@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-{{ .Release.Name }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: fung-{{ .Release.Name }}
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: fung-{{ .Release.Name }}
+        tier: backend
+    spec:
+      containers:
+        - name: backend-{{ .Release.Name }}
+          image: "{{ .Values.backend.image }}:{{ .Values.backend.tag }}"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-{{ .Release.Name }}/0:{{ .Values.redis.port }}"
+      imagePullSecrets:
+        - name: docker-registry-registrycreds
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-{{ .Release.Name }}
+spec:
+  selector:
+    app: fung-{{ .Release.Name }}
+    tier: backend
+  ports:
+    - port: {{ .Values.backend.port }}
+      targetPort: 8000
