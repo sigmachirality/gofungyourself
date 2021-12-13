@@ -34,4 +34,5 @@ COPY . .
 # Run the application
 # RUN "pipenv shell"
 # RUN python manage.py migrate
+EXPOSE 8000
 CMD pipenv run python manage.py migrate && pipenv run python manage.py runserver 8000
