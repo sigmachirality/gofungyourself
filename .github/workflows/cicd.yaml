@@ -56,9 +56,31 @@ jobs:
             run: |
                 rm -rf /tmp/.buildx-cache
                 mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+  
+  backend-unittest:
+    name: Unit test application
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install deps
+        uses: VaultVulp/action-pipenv@v2.0.1
+        with:
+          command: install -d # Install all dependencies, including development ones
+
+      - name: Run Tests
+        run: poetry run pytest
+  
+  
   backend-build:
       name: Build and publish backend
       runs-on: ubuntu-latest
+      needs: backend-unittest
       steps:
           - name: Checkout
             uses: actions/checkout@v2
