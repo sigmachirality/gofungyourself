@@ -1,4 +1,4 @@
-@import '~bulma/bulma.sass';
+// @import '~bulma/bulma.sass';
 
 html,
 body {
@@ -17,3 +17,5 @@ a {
 * {
   box-sizing: border-box;
 }
+
+@import url(https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css)
