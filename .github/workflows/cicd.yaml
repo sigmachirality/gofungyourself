@@ -87,8 +87,8 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # - name: Checkout code
+      #   uses: actions/checkout@v2
 
       - name: Login to AWS
         uses: aws-actions/configure-aws-credentials@v1
@@ -104,6 +104,6 @@ jobs:
       - name: Apply helm charts
         run: |
           helm upgrade --install test deploy \
-          --set frontend.tag=${{ github.sha }} --set backend.tag=${{ github.sha }} --set application.ingress.path="/test"
+          --set frontend.tag=${{ github.sha }} --set backend.tag=${{ github.sha }} --set application.ingress.path=//test
 
                 
