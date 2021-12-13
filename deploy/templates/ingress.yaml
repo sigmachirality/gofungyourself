@@ -2,8 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: api-ingress-{{ .Release.Name }}
-  annotations: 
-      traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
+#   annotations: 
+#       traefik.ingress.kubernetes.io/rule-type: PathPrefixStrip
 spec:
   rules:
     - host: "{{ .Values.application.ingress.host }}"
