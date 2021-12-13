@@ -41,6 +41,7 @@ spec:
   rules:
     - host: "{{ .Values.application.ingress.host }}"
       http:
+        paths:
           - path: "{{ .Values.application.ingress.path }}"
             backend:
               serviceName: frontend-{{ .Release.Name }}
