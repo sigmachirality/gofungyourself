@@ -11,5 +11,8 @@ requests = "*"
 pytest-django = "*"
 pytest-asyncio = "*"
 
+[scripts]
+test = "pytest"
+
 [requires]
 python_version = "3.8.10"
