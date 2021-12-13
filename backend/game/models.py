@@ -17,6 +17,8 @@ class Game(models.Model):
         default=Mode.CLOSEST
     )
 
+    started = models.BooleanField(default=False)
+
 class Player(models.Model):
     name = models.CharField(max_length=32)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)

@@ -9,7 +9,7 @@ interface GameData {
 
 const CreateGame : FunctionComponent = () => {
   const [gameMode, setGameMode] = useState<string>("closest"); 
-  const [numEntries, setNumEntries] = useState<number>(0);
+  const [numEntries, setNumEntries] = useState<number>(10);
   const router = useRouter();
 
   function handleChangeMode(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -18,7 +18,7 @@ const CreateGame : FunctionComponent = () => {
 
   function handleChangeEntries(e: React.ChangeEvent<HTMLInputElement>) {
     const target = Number(e.target.value);
-    if (target <= 0 || target > 5) return;
+    if (target < 5 || target > 20) return;
     setNumEntries(target);
   }
 
@@ -36,7 +36,7 @@ const CreateGame : FunctionComponent = () => {
     <select value={gameMode} onChange={handleChangeMode}>
       <option value="closest">Closest Wins</option>
       <option value="exact">Exact Match</option>
-      <option value="bubblegum">Bubblegum Rules</option>
+      <option value="bubblegum">Closest Lower</option>
       <option value="meme">Always Wrong</option>
     </select>
     <input value={numEntries} onChange={handleChangeEntries} type="number" />
