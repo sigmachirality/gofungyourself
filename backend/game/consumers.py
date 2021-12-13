@@ -121,6 +121,7 @@ class GameConsumer(WebsocketConsumer):
                         if current_delta <= delta:
                             delta = current_delta
                             current_min = player
+                        print(player.name, current_delta, player.score)
                     current_min.score = current_min.score + 1
                     current_min.save()
                 elif self.game.mode == 'bubble':
