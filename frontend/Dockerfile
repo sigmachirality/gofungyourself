@@ -1,4 +1,4 @@
-FROM node:17-alpine3.12
+FROM node:16.13.1-slim
 
 WORKDIR /app
 
@@ -8,5 +8,5 @@ RUN npm install --frozen-lockfile --no-dev
 
 COPY . .
 
-RUN "npm build"
+RUN npm run build
 CMD ["npm", "start"]
