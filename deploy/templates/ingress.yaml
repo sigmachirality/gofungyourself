@@ -2,6 +2,24 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  name: socket-ingress-{{ .Release.Name }}
+spec:
+  rules:
+    - host: "{{ .Values.application.ingress.host }}"
+      http:
+        paths:
+          - path: "{{ .Values.application.ingress.path }}/{{ .Values.application.ingress.socket_prefix }}"
+            backend:
+              serviceName: backend-{{ .Release.Name }}
+              servicePort: {{ .Values.backend.port }}
+  tls:
+    - hosts:
+        - "{{ .Values.application.ingress.host }}"
+      secretName: "{{ .Values.application.ingress.secretName }}"
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
   name: main-ingress-{{ .Release.Name }}
 #   annotations:
 #     nginx.org/rewrites: "serviceName=frontend-{{ .Release.Name }} rewrite=/"
@@ -17,24 +35,6 @@ spec:
             backend:
               serviceName: frontend-{{ .Release.Name }}
               servicePort: {{ .Values.frontend.port }}
-  tls:
-    - hosts:
-        - "{{ .Values.application.ingress.host }}"
-      secretName: "{{ .Values.application.ingress.secretName }}"
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: socket-ingress-{{ .Release.Name }}
-spec:
-  rules:
-    - host: "{{ .Values.application.ingress.host }}"
-      http:
-        paths:
-          - path: "{{ .Values.application.ingress.path }}/{{ .Values.application.ingress.socket_path }}"
-            backend:
-              serviceName: backend-{{ .Release.Name }}
-              servicePort: {{ .Values.backend.port }}
   tls:
     - hosts:
         - "{{ .Values.application.ingress.host }}"
