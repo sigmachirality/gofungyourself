@@ -74,7 +74,7 @@ jobs:
           command: install -d # Install all dependencies, including development ones
 
       - name: Run Tests
-        run: poetry run pytest
+        run: pipenv run pytest
   
   
   backend-build:
