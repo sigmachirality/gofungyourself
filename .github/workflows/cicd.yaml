@@ -30,7 +30,8 @@ jobs:
             uses: cypress-io/github-action@v2
             with:
                 working-directory: frontend
-                build: npx cypress info
+                build: npm run build
+                start: npm run start
 
   frontend-build:
       name: Build and publish frontend
