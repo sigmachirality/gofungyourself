@@ -9,7 +9,6 @@ import requests
 def create_game(request):
     if request.method != 'POST':
         return HttpResponseNotFound("GET called on POST route")
-    # try:
     content = json.loads(request.body)
     game_mode = content['mode']
     game_code = random.randint(10000, 100000)
@@ -20,22 +19,22 @@ def create_game(request):
     game.save()
 
     offset = random.randint(100, 10000)
-    data = requests.get(f"https://api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit=20").json()['assets']
+    data = requests.get(f"https://rinkeby-api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit=20").json()['assets']
     for nft in data:
         if ('last_sale' in nft):
             entry = Entry.objects.create(
                 id=nft['id'],
                 image_url=nft['image_url'],
-                name=nft['name'], 
-                price=nft['last_sale']['payment_token']['usd_price'],
+                name=nft['name'] or "", 
+                price=(nft['last_sale']
+                    .get('payment_token', {})
+                    .get('usd_price', {})
+                ) or 0,
                 game=game
             )
             entry.save()
     
     return JsonResponse({ 'code': game_code })
-    # except Exception as e:
-    #     print("wtf")
-    #     return HttpResponseServerError(str(e))
 
 @csrf_exempt
 def check_game(request, code):
