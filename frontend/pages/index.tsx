@@ -12,7 +12,6 @@ const Home: NextPage = () => {
 
   function handleSubmit() {
     //TODO: post the contents of room
-    alert(room.trim());
     router.push(`/room/${room}`);
   }
 

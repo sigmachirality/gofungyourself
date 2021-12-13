@@ -70,8 +70,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'rest.wsgi.application'
-ASGI_APPLICATION = 'rest.asgi.application'
 
+# Channels
+ASGI_APPLICATION = 'rest.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 
 # Database
