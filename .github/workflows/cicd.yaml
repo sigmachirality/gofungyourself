@@ -68,6 +68,6 @@ jobs:
       - name: Apply helm charts
         run: |
           helm upgrade --install test deploy \
-          --set frontend.tag=${{ github.sha }} --set backend.tag=${{ github.sha }} --set ingress.path=//test
+          --set frontend.tag=${{ github.sha }} --set backend.tag=${{ github.sha }} --set application.ingress.path="/test"
 
                 
