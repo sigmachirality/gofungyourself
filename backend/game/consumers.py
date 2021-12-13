@@ -104,19 +104,20 @@ class GameConsumer(WebsocketConsumer):
             }))
         elif message_type == 'result':
             question_num = text_data_json['question']
+            if question_num > self.game.rounds:
+                return
             for i, q in enumerate(self.game.entry_set.all()):
                 if i == (question_num - 1):
                     question = q
                     break
             if not question.graded:
-                print("grading", question_num)
+                players = self.game.player_set.select_for_update().all()
                 if self.game.mode == 'closest':
                     delta = abs(self.player.guess - round(float(question.price)))
                     current_min = self.player
-                    for player in list(self.game.player_set.all()):
-                        print(question_num, player.name, player.guess, player.score)
+                    for player in list(players):
                         current_delta = abs(player.guess - round(float(question.price)))
-                        if current_delta < delta:
+                        if current_delta <= delta:
                             delta = current_delta
                             current_min = player
                     current_min.score = current_min.score + 1
@@ -124,7 +125,7 @@ class GameConsumer(WebsocketConsumer):
                 elif self.game.mode == 'bubble':
                     delta = round(float(question.price)) - self.player.guess
                     current_min = self.player
-                    for player in list(self.game.player_set.all()):
+                    for player in list(players):
                         current_delta = round(float(question.price)) - player.guess
                         if (current_delta < delta and current_delta > 0) or delta < 0:
                             delta = current_delta
@@ -142,13 +143,16 @@ class GameConsumer(WebsocketConsumer):
                 async_to_sync(self.channel_layer.group_send)(
                     self.room_group_name,
                     {
+                        'type': 'users_update'
+                    }
+                )
+                async_to_sync(self.channel_layer.group_send)(
+                    self.room_group_name,
+                    {
                         'type': 'get_question',
                         'question': question_num
                     }
                 )
-
-            self.users_update("")
-
 
 
 
@@ -177,6 +181,7 @@ class GameConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({
                 'type': 'end',
             }))
+            return
         self.send(text_data=json.dumps({
             'type': 'question',
             'question': model_to_dict(list(self.game.entry_set.all())[question])
