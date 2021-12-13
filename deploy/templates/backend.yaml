@@ -23,6 +23,8 @@ spec:
           env:
             - name: REDIS_URL
               value: "redis://redis-{{ .Release.Name }}/0:{{ .Values.redis.port }}"
+            - name: HOST
+              value: "{{ .Values.application.ingress.host }}"
       imagePullSecrets:
         - name: docker-registry-registrycreds
 ---
