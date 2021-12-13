@@ -8,4 +8,5 @@ RUN npm install --frozen-lockfile --no-dev
 
 COPY . .
 
+RUN "npm build"
 CMD ["npm", "start"]
