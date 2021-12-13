@@ -43,8 +43,8 @@ interface IRoom {
 const WaitingRoom : FunctionComponent<IRoom> = ({ users, startGame }) => {
     return <>
         <ul>
-            {users.map(user =>
-                <li>
+            {users.map((user, i) =>
+                <li key={i}>
                     {user.name}
                 </li>
             )}
@@ -56,8 +56,8 @@ const WaitingRoom : FunctionComponent<IRoom> = ({ users, startGame }) => {
 const ScoreBoard : FunctionComponent<IRoom> = ({ users }) => {
     return <>
         <ul>
-            {users.map(user =>
-                <li>
+            {users.map((user, i) =>
+                <li key={i}>
                     {user.name}: {user.score}
                 </li>
             )}

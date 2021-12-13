@@ -20,7 +20,7 @@ jobs:
   frontend-build:
       name: Build and publish frontend
       runs-on: ubuntu-latest
-      # needs: frontend-lint # ENABLE FOR GOOD PRACTICE
+      needs: frontend-lint # ENABLE FOR GOOD PRACTICE
       steps:
           - name: Checkout
             uses: actions/checkout@v2
