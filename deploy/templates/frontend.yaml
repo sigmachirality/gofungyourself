@@ -25,6 +25,8 @@ spec:
               value: "backend-{{ .Release.Name }}:{{ .Values.backend.port }}"
             - name: NEXT_PUBLIC_BASE_PATH
               value: "{{ .Values.application.ingress.path }}"
+            - name: NEXT_PUBLIC_HOST
+              value: "{{ .Values.application.ingress.host }}"
       imagePullSecrets:
         - name: docker-registry-registrycreds
 ---

@@ -31,7 +31,7 @@ spec:
     - host: "{{ .Values.application.ingress.host }}"
       http:
         paths:
-          - path: "{{ .Values.application.ingress.path }}/api"
+          - path: "{{ .Values.application.ingress.path }}/{{ .Values.application.ingress.socket_path }}"
             backend:
               serviceName: backend-{{ .Release.Name }}
               servicePort: {{ .Values.backend.port }}
