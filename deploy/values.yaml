@@ -3,7 +3,7 @@ application:
     host: simono.cis188.org
     path: "/"
     secretName: "simono-cis188-org-tls"
-    socket_path: "/ws"
+    socket_prefix: "ws"
 
 redis:
   image: redis
@@ -19,5 +19,5 @@ frontend:
 backend:
   image: ghcr.io/sigmachirality/gofungyourself-backend
   tag: latest
-  port: 8000
+  port: 4000
   replicas: 1

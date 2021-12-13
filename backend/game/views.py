@@ -20,9 +20,9 @@ def create_game(request):
     game.save()
 
     offset = random.randint(100, 10000)
-    data = requests.get(f"https://rinkeby-api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit={ game_entries }").json()['assets']
+    data = requests.get(f"https://api.opensea.io/api/v1/assets?order_by=sale_count&offset={ offset }&limit={ game_entries }").json()['assets']
     for nft in data:
-        if ('last_sale' in nft):
+        if ('last_sale' in nft and nft['last_sale'] is not None):
             entry = Entry.objects.create(
                 id=nft['id'],
                 image_url=nft['image_url'],

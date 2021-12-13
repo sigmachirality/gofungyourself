@@ -22,7 +22,10 @@ spec:
             - containerPort: 8000
           env:
             - name: REDIS_URL
-              value: "redis://redis-{{ .Release.Name }}/0:{{ .Values.redis.port }}"
+              # value: "redis://redis-{{ .Release.Name }}/0:{{ .Values.redis.port }}"
+              value: "redis-{{ .Release.Name }}"
+            - name: HOST
+              value: "{{ .Values.application.ingress.host }}"
       imagePullSecrets:
         - name: docker-registry-registrycreds
 ---

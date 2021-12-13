@@ -14,17 +14,19 @@ RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --deploy --ignore-pipfile
+RUN pipenv install 
 
-FROM base AS runtime
+# --deploy --ignore-pipfile
 
-COPY --from=python-deps /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
+# FROM base AS runtime
 
-# Create and switch to a new user
-RUN useradd --create-home appuser
-WORKDIR /home/appuser
-USER appuser
+# COPY --from=python-deps /.venv /.venv
+# ENV PATH="/.venv/bin:$PATH"
+
+# # Create and switch to a new user
+# RUN useradd --create-home appuser
+# WORKDIR /home/appuser
+# USER appuser
 
 # Install application into container
 COPY . .
@@ -32,4 +34,5 @@ COPY . .
 # Run the application
 # RUN "pipenv shell"
 # RUN python manage.py migrate
-CMD python manage.py migrate && python manage.py runserver
+EXPOSE 8000
+CMD pipenv run python manage.py migrate && pipenv run python manage.py runserver 0.0.0.0:8000
