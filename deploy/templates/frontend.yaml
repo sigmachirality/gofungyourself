@@ -21,9 +21,9 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: BACKEND_URL
+            - name: NEXT_PUBLIC_BACKEND_URL
               value: "backend-{{ .Release.Name }}:{{ .Values.backend.port }}"
-            - name: BASE_PATH
+            - name: NEXT_PUBLIC_BASE_PATH
               value: "{{ .Values.application.ingress.path }}"
       imagePullSecrets:
         - name: docker-registry-registrycreds

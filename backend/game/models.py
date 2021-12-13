@@ -25,5 +25,8 @@ class Player(models.Model):
     score = models.IntegerField(default=0)
 
 class Entry(models.Model):
-    token = models.CharField(max_length=32)
-    contract_address = models.CharField(max_length=32) 
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    id = models.CharField(max_length=128, primary_key=True)
+    name = models.CharField(max_length=128) 
+    image_url = models.CharField(max_length=256)
+    price = models.CharField(max_length=128)
