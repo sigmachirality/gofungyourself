@@ -24,7 +24,7 @@ spec:
             - name: BACKEND_URL
               value: "backend-{{ .Release.Name }}:{{ .Values.backend.port }}"
             - name: BASE_PATH
-              value: {{ .Values.application.ingress.path }}
+              value: "{{ .Values.application.ingress.path }}"
       imagePullSecrets:
         - name: docker-registry-registrycreds
 ---
