@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useTimer } from 'react-timer-hook';
 
 
 interface IUsernameForm {
@@ -29,6 +30,41 @@ const UsernameForm: FunctionComponent<IUsernameForm> = ({ setUsername }) => {
     </form>
 }
 
+interface IUser {
+    score: number
+    name: string
+}
+
+interface IRoom {
+    users: Array<IUser>
+    startGame?: () => void
+}
+
+const WaitingRoom : FunctionComponent<IRoom> = ({ users, startGame }) => {
+    return <>
+        <ul>
+            {users.map(user =>
+                <li>
+                    {user.name}
+                </li>
+            )}
+        </ul>
+        <button onClick={startGame} disabled={users.length <= 1}>Start Game</button>
+    </>
+}
+
+const ScoreBoard : FunctionComponent<IRoom> = ({ users }) => {
+    return <>
+        <ul>
+            {users.map(user =>
+                <li>
+                    {user.name}: {user.score}
+                </li>
+            )}
+        </ul>
+    </>
+}
+
 interface IChatMessage {
     message: string
     sender: string
@@ -37,44 +73,82 @@ interface IChatMessage {
 const Room: NextPage = () => {
     const router = useRouter();
     const { number } = router.query;
+    const [socket, setSocket] = useState<WebSocket>()
     const [username, setUsername] = useState<string>("");
+    const [users, setUsers] = useState<Array<IUser>>([]);
     const [message, setMessage] = useState<string>("");
     const [messages, setMessages] = useState<Array<IChatMessage>>([]);
-    const [socket, setSocket] = useState<WebSocket>()
+    const [started, setStarted] = useState<boolean>(false)
+
 
     useEffect(
         () => {
             if (typeof number === 'undefined' || username.length <= 0) return
             const socket = new WebSocket(`ws://${process.env.BACKEND_URL ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
+            socket.onclose = e => {
+                alert("Game doesn't exist!")
+                router.push('/')
+            }
             setSocket(socket)
         }
         , [number, username]
     )
+
+    function onExpire() {
+        
+    }
+
+    const { seconds, restart } = useTimer({ 
+        expiryTimestamp: new Date(), 
+        onExpire
+    });
+
 
     useEffect(() => {
         socket && (socket.onmessage = e => {
             const data = JSON.parse(e.data)
             console.log(data)
             if (data.type === 'state') {
-                // TODO: set the game state
+                setUsers(data.users)
+                setStarted(data.started)
+            } else if (data.type === 'user') {
+                started && users.sort((a: IUser, b: IUser) => b.score - a.score)
+                setUsers(data.users)
             } else if (data.type === 'message') {
-                number !== 'undefined' && setMessages([...messages, data])
+                setMessages([...messages, data])
+            } else if (data.type === 'start') {
+                const deadline = new Date()
+                deadline.setSeconds(deadline.getSeconds() + 15)
+                restart(deadline)
+                setStarted(true)
+            } else if (data.type === 'question') {
+                const deadline = new Date()
+                deadline.setSeconds(deadline.getSeconds() + 15)
+                restart(deadline)
+                setStarted(true)
             }
         })
-    }, [socket, messages])
+    }, [socket, messages, restart])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setMessage(e.target.value);
     }
 
     function handleSend() {
-        socket && socket.send(JSON.stringify({ message }))
+        socket && socket.send(JSON.stringify({ type: 'message', message }))
+    }
+
+    function startGame() {
+        socket && socket.send(JSON.stringify({ type: 'start'}))
     }
 
     const chat = messages.map(({ message, sender }, i) => <li key={`${message}-${i}`}>{sender}: {message}</li>)
 
-    return username
-        ? (
+    if (!username) {
+        return <UsernameForm setUsername={setUsername} />
+    }
+
+    return (
             <>
                 <nav className="max-width is-flex">
                     <div className="mr-auto is-inline">
@@ -86,7 +160,19 @@ const Room: NextPage = () => {
                 </nav>
                 <div className="columns is-align-content-stretch">
                     <div className="column">
-                        GAME HERE
+                        {
+                            started
+                                ? <>
+                                    <h1>Timer: {seconds} </h1>
+                                    <ScoreBoard 
+                                        users={users}
+                                    />
+                                </>
+                                : <WaitingRoom
+                                    startGame={startGame}
+                                    users={users}
+                                />
+                        }
                     </div>
                     <div className="column is-one-quarter is-align-content-stretch">
                         <ul className="is-clipped is-align-content-stretch">
@@ -104,7 +190,6 @@ const Room: NextPage = () => {
                 </div>
             </>
         )
-        : <UsernameForm setUsername={setUsername} />
 }
 
 export default Room

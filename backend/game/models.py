@@ -17,12 +17,13 @@ class Game(models.Model):
         default=Mode.CLOSEST
     )
 
+    started = models.BooleanField(default=False)
+
 class Player(models.Model):
     name = models.CharField(max_length=32)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
 
 class Entry(models.Model):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
     token = models.CharField(max_length=32)
     contract_address = models.CharField(max_length=32) 
