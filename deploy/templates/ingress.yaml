@@ -1,7 +1,8 @@
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: main-ingress-{{ .Release.Name }}
+  name: ws-ingress-{{ .Release.Name }}
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -27,6 +28,19 @@ spec:
             backend:
               serviceName: backend-{{ .Release.Name }}
               servicePort: {{ .Values.backend.port }}
+  tls:
+    - hosts:
+        - "{{ .Values.application.ingress.host }}"
+      secretName: "{{ .Values.application.ingress.secretName }}"
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: main-ingress-{{ .Release.Name }}
+spec:
+  rules:
+    - host: "{{ .Values.application.ingress.host }}"
+      http:
           - path: "{{ .Values.application.ingress.path }}"
             backend:
               serviceName: frontend-{{ .Release.Name }}
