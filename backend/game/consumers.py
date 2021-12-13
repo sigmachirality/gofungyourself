@@ -168,22 +168,24 @@ class GameConsumer(WebsocketConsumer):
 
 
     def users_update(self, _):
-        self.send(text_data=json.dumps({
-            'type': 'user',
-            'users': list(self.game.player_set.values("name", "score"))
-        }))
+        if hasattr(self, 'game'):
+            self.send(text_data=json.dumps({
+                'type': 'user',
+                'users': list(self.game.player_set.values("name", "score"))
+            }))
 
 
     def get_question(self, event):
-        self.player.guess = 0
-        self.player.save()
-        question = int(event['question'])
-        if question >= self.game.rounds:
+        if hasattr(self, 'game'):
+            self.player.guess = 0
+            self.player.save()
+            question = int(event['question'])
+            if question >= self.game.rounds:
+                self.send(text_data=json.dumps({
+                    'type': 'end',
+                }))
+                return
             self.send(text_data=json.dumps({
-                'type': 'end',
+                'type': 'question',
+                'question': model_to_dict(list(self.game.entry_set.all())[question])
             }))
-            return
-        self.send(text_data=json.dumps({
-            'type': 'question',
-            'question': model_to_dict(list(self.game.entry_set.all())[question])
-        }))
