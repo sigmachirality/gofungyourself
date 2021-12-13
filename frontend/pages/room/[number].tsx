@@ -45,7 +45,7 @@ const Room: NextPage = () => {
     useEffect(
         () => {
             if (typeof number === 'undefined' || username.length <= 0) return
-            const socket = new WebSocket(`ws://${process.env.BACKEND_URL ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
+            const socket = new WebSocket(`ws://${process.env.NEXT_PUBLIC_BACKEND_URL ?? "127.0.0.1:8000"}/ws/room/${number}/${username}`)
             setSocket(socket)
         }
         , [number, username]
