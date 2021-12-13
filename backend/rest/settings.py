@@ -16,7 +16,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-REDIS = os.environ("REDIS_URL", '127.0.0.1')
+REDIS = os.getenv("REDIS_URL", '127.0.0.1')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -30,7 +30,7 @@ DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    f"https://{os.environ('HOST', 'localhost')}",
+    f"https://{os.getenv('HOST', 'localhost')}",
 ]
 
 ALLOWED_HOSTS = ["*"]
