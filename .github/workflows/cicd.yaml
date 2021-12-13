@@ -29,7 +29,8 @@ jobs:
           - name: Cypress run
             uses: cypress-io/github-action@v2
             with:
-              spec: cypress/integration/sample_spec.js
+              project: frontend
+              spec: frontend/cypress/integration/sample_spec.js
 
   frontend-build:
       name: Build and publish frontend
